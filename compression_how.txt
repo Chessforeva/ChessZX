@@ -1,0 +1,111 @@
+I. Bytes per game
+
+Compression results (in data amount)
+ for average 6-pieces chess position, with moves
+ (+counters inside,+tail space 0s
+ 16128 bytes filesize=63*256)
+
+9 bytes for M1, 1 movement to checkmate
+11 bytes for M2, 3 mv.
+12 bytes for M3, 5 mv.
+
+
+II. Chess position encoding (howto):
+
+==========================
+Data segment in data bank:
+==========================
+
+address
+0xC000  or other, in asm
+ [g0][data]   - we know where it is in memory
+0xC100
+ [g1][data1]  - and we know that 1+255 bytes contain puzzles
+ ...
+0xFE00
+ [g62][data62] - we left last 256 bytes for initial stack
+
+
+g0 - byte = count of games in this 256 bytes segment
+data0 =
+
+[b0][sequence0...][b1][sequence1...]...
+|-----game0------|-----game1-------|------> to 255 bytes, ends with 0-s
+
+b0 - byte = bits for this puzzle [0..255] (max.32bytes),
+           so we know how to skip to next puzzle byte b1
+sequence0 - chess position+moves data are compressed into a sequence of bits
+
+  sequence bits = [Position][w/b][MW][Moves]
+
+
+==============
+Position bits:
+==============
+A  B    C
+0 0000 000
+
+A (Is any piece in this rank? Then what and where?)
+0-piece in this rank line (A8-H8)
+1-skip to next rank line (A7-H7), next bit is A,
+   position is over when 8 skips reached
+
+
+B (4 bits for piece number)
+1-12 piece 1-wp,2-wn,3-wb,4-wr,5-wq,6-wk,  7-bp,8-bn,9-bb,10-br,11-bq,12-bk
+
+C (3 bits for column number)
+0-7 file A-H column where the piece is on square
+
+Samples:
+ssssssss - skip 8 times
+11111111 - empty board
+
+sss   wk  "a"  ss   bk "c" sss
+1110 0101 001 110 1011 010 111     8/8/8/K7/8/2k5/8/8
+
+========================
+w/b 1 bit - side to move: 
+========================
+
+0 - white
+1 - black
+
+========================
+MW 3 bits - width of move:
+========================
+
+Table of cases for max.count of possible move 
+
+         Side        Opponent
+MW3     to move        side
+---   -----------   -----------
+000 - 4bits (16m),  3bits (8m)
+001 - 5bits (32m),  3bits (8m)
+010 - 5bits (32m),  4bits (16m)
+011 - 5bits (32m),  5bits (32m)
+100 - 6bits (64m),  3bits (8m)
+101 - 6bits (64m),  4bits (16m)
+110 - 6bits (64m),  5bits (32m)
+111 - 6bits (64m),  6bits (64m)
+
+
+======
+Moves:
+======
+
+Sequence (length is known from b0 byte):
+[Attacking side 1st move][Opponent 1st move][Attacking side 2nd move][Opponent 2nd move]...
+
+Our assemler code does move genereation in each chess position.
+(scanning squares 0 to 63, then by piece type, etc).
+There are n-possible moves in each case.
+So, we use index to know which in ordered move genereation list for each position.
+Then encode in width according to MW3 table above.
+
+Sample:
+
+M3   move1    move2
+111  00001    00001   - 2 moves in 5 bits each, Nb1-a3, a7-a6
+
+

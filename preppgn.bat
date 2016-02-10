@@ -1,0 +1,2 @@
+luajit preppgn.lua
+pause
