@@ -5,9 +5,7 @@
 -- Read "compression_how.txt"
 --
 -- Files available for downloading:
---  M1 http://sisenis-1193.appspot.com/M1_gen_puzzles_82k.zip
---  M2 http://sisenis-1193.appspot.com/M2_gen_puzzles_49k.zip
---  M3 http://sisenis-1193.appspot.com/M3_gen_puzzles_23k.zip
+--   https://chessforeva.blogspot.com/2016/01/gen-mates.html
 --
 -- ====================================================
 
