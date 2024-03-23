@@ -32,11 +32,13 @@ data0 =
 [b0][sequence0...][b1][sequence1...]...
 |-----game0------|-----game1-------|------> to 255 bytes, ends with 0-s
 
-b0 - byte = bits for this puzzle [0..255] (max.32bytes),
+b0 - byte = bits for this puzzle [0..255] (max.32bytes per puzzle),
            so we know how to skip to next puzzle byte b1
 sequence0 - chess position+moves data are compressed into a sequence of bits
 
   sequence bits = [Position][w/b][MW][Moves]
+
+The length of sequence is not limited, but under 32bytes.
 
 
 ==============
@@ -58,11 +60,14 @@ C (3 bits for column number)
 0-7 file A-H column where the piece is on square
 
 Samples:
+(s-skip, p-piece)
+
 ssssssss - skip 8 times
 11111111 - empty board
 
-sss   wk  "a"  ss   bk "c" sss
-1110 0101 001 110 1011 010 111     8/8/8/K7/8/2k5/8/8
+sss p  wk  "a"  p  bp    ss p  bk  "c"  sss
+111 0 0110 000  0 0111   11 0 1011 010  111     8/8/8/K3p3/8/2k5/8/8
+
 
 ========================
 w/b 1 bit - side to move: 
@@ -106,6 +111,6 @@ Then encode in width according to MW3 table above.
 Sample:
 
 M3   move1    move2
-111  00001    00001   - 2 moves in 5 bits each, Nb1-a3, a7-a6
+011  00001    00001   - 2 moves in 5 bits each, Nb1-a3, a7-a6
 
 
