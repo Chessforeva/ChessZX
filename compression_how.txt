@@ -65,8 +65,8 @@ Samples:
 ssssssss - skip 8 times
 11111111 - empty board
 
-sss p  wk  "a"  p  bp    ss p  bk  "c"  sss
-111 0 0110 000  0 0111   11 0 1011 010  111     8/8/8/K3p3/8/2k5/8/8
+sss p  wk  "a"  p  bp  "e"  ss p  bk  "c"  sss
+111 0 0110 000  0 0111 100  11 0 1011 010  111     8/8/8/K3p3/8/2k5/8/8
 
 
 ========================
